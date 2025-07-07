@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useUser } from '@/hooks/useUser';
+import { useUser } from '@/contexts/UserContext';
 import { clearToken } from '@/lib/auth';
 import { useRouter } from 'next/router';
 import { ReactNode } from 'react';
@@ -9,10 +9,11 @@ type Props = {
 };
 
 export const Layout = ({ children }: Props) => {
-  const { user, loading } = useUser();
+  const { user, loading, logout } = useUser();
   const router = useRouter();
 
   const handleLogout = () => {
+    logout();
     clearToken();
     router.push('/login');
   };

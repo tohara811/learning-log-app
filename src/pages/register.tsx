@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useUser } from '@/contexts/UserContext';
 import { apiClient } from '@/lib/apiClient';
 import { setToken } from '@/lib/auth';
 
@@ -9,6 +10,7 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { refresh } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ export default function RegisterPage() {
       });
 
       setToken(loginRes.token);
+      await refresh();
       router.push('/');
     } catch (err: any) {
       setError(err.message || '登録に失敗しました');

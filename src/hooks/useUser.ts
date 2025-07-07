@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiClient } from '@/lib/apiClient';
+import { apiClient, ApiError } from '@/lib/apiClient';
 
 type User = {
   id: string;
@@ -18,8 +18,8 @@ export const useUser = () => {
         const res = await apiClient('/me');
         setUser(res.user);
       } catch (err: any) {
-        // 👇 401の場合は「未ログイン扱い」として user = null のまま
-        if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        if (err instanceof ApiError && err.status === 401) {
+          // 未ログインとして扱う（正常）
           setUser(null);
         } else {
           setError(err.message || 'ユーザー情報の取得に失敗しました');

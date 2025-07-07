@@ -1,5 +1,15 @@
 import { getToken } from './auth';
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
 export const apiClient = async (
   path: string,
   options: RequestInit = {}
@@ -16,8 +26,9 @@ export const apiClient = async (
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.message || 'API request failed');
+    const errorData = await res.json().catch(() => ({}));
+    const message = errorData.message || res.statusText || 'API request failed';
+    throw new ApiError(message, res.status);
   }
 
   return res.json();

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useUser } from '@/contexts/UserContext';
 import { apiClient } from '@/lib/apiClient';
 import { setToken } from '@/lib/auth';
 
@@ -8,6 +9,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { refresh } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +21,7 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       setToken(res.token);
+      await refresh();
       router.push('/');
     } catch (err: any) {
       setError(err.message || 'ログインに失敗しました');
